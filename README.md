@@ -22,8 +22,8 @@ BeatGuess est une application web de **blind test musical** développée en **Re
 │   ├── /components  # Composants réutilisables (Boutons, Timer, Score...)
 │   ├── /pages  # Pages principales (Home, Game, Results...)
 │   ├── /api  # Gestion des appels API avec Flask
-│   ├── App.jsx  # Point d'entrée principal
-│   ├── index.jsx  # Initialisation de React
+│   ├── App.js  # Point d'entrée principal
+│   ├── index.js  # Initialisation de React
 │   ├── styles.css  # Styles de l'application
 │── package.json  # Dépendances et scripts React
 │── README.md  # Documentation
