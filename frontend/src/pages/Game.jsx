@@ -1,15 +1,29 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 import Button from "../components/Button";
-import Input from "../components/Input";
+
+const socket = io("http://127.0.0.1:8080");
 
 const Game = () => {
+  const { id } = useParams();
   const [song, setSong] = useState(null);
+  const [questionType, setQuestionType] = useState("");
   const [guess, setGuess] = useState("");
   const [message, setMessage] = useState("");
-  const [questionType, setQuestionType] = useState(""); // Type de question
-  const [timer, setTimer] = useState(30); // Timer de 30s
+  const [timer, setTimer] = useState(30);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    socket.on("new_game", (data) => {
+      console.log("🚀 Nouvelle partie commencée !");
+      fetchSong();
+    });
+
+    return () => {
+      socket.off("new_game");
+    };
+  }, []);
 
   useEffect(() => {
     let countdown;
@@ -18,19 +32,21 @@ const Game = () => {
     } else if (timer === 0) {
       setMessage("⏳ Temps écoulé !");
       setIsPlaying(false);
+      socket.emit("game_finished", { room_id: id });
     }
     return () => clearInterval(countdown);
   }, [isPlaying, timer]);
 
   const fetchSong = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:5000/api/get_song");
-      setSong(res.data);
+      const res = await fetch(`http://127.0.0.1:8080/api/get_song`);
+      const data = await res.json();
+      setSong(data);
       setMessage("");
       setGuess("");
       setTimer(30);
       setIsPlaying(true);
-      generateQuestion(res.data);
+      generateQuestion(data);
     } catch (error) {
       setMessage("❌ Erreur lors du chargement de la chanson.");
     }
@@ -68,11 +84,6 @@ const Game = () => {
           </audio>
           <p className="text-xl mt-4">{questionType.question}</p>
           <p className="font-bold">⏳ {timer} secondes restantes</p>
-          <Input
-            placeholder="Entrez la réponse..."
-            value={guess}
-            onChange={(e) => setGuess(e.target.value)}
-          />
           <Button text="Valider" onClick={checkAnswer} />
           <p className="mt-2 font-bold">{message}</p>
         </>
