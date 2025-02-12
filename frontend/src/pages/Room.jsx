@@ -1,15 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import Chat from "./Chat"; // Import du chat
+import Chat from "./Chat";
+import socket from "../api/socket"; // Import WebSocket
 
 const Room = () => {
   const { id } = useParams(); // Récupère l'ID de la room
   const [genre, setGenre] = useState("");
+  const [username, setUsername] = useState(localStorage.getItem("username") || "");
 
   // Liste des genres
   const genres = ["Pop", "Rock", "Rap", "Jazz", "Classique", "Electro"];
+
+  useEffect(() => {
+    if (username) {
+      socket.emit("join_room", { username, room: id });
+    }
+
+    socket.on("join_confirmation", (data) => {
+      console.log("✅ Confirmation de connexion :", data.message);
+    });
+
+    return () => {
+      socket.off("join_confirmation");
+    };
+  }, [id, username]);
 
   return (
     <div className="flex flex-col items-center h-screen">
@@ -32,7 +48,7 @@ const Room = () => {
 
       {/* Espace de chat */}
       <div className="mt-6 w-full max-w-lg">
-        <Chat />
+        <Chat roomId={id} username={username} />
       </div>
 
       {/* Bouton pour jouer */}

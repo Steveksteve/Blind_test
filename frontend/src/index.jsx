@@ -7,7 +7,6 @@ import Results from "./pages/Results";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
-import Rooms from "./pages/Rooms";
 import Room from "./pages/Room";
 import "./index.css";
 
@@ -30,7 +29,6 @@ root.render(
       <Route path="/chat" element={<Chat />} />
 
       {/* Rooms */}
-      <Route path="/rooms" element={<Rooms />} />
       <Route path="/room/:id" element={<Room />} />
     </Routes>
   </Router>

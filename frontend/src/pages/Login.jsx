@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const { login } = useContext(AuthContext);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Connexion réussie !");
-    navigate("/game");
+    const success = await login(formData.email, formData.password);
+    if (success) {
+      navigate("/game");
+    } else {
+      setError("Identifiants incorrects. Veuillez réessayer.");
+    }
   };
 
   return (
@@ -18,9 +25,10 @@ const Login = () => {
       <h1 className="text-3xl font-bold mb-6">🔐 Connexion</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          placeholder="Nom d'utilisateur"
-          value={formData.username}
-          onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
         <Input
           type="password"
@@ -28,6 +36,7 @@ const Login = () => {
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
         />
+        {error && <p className="text-red-500">{error}</p>}
         <Button text="Se connecter" />
       </form>
     </div>
