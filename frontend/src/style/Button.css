@@ -1,0 +1,22 @@
+/* 🎭 Styles des boutons */
+.button {
+    background-color: #ff00ff;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.button:hover {
+    background-color: #ff66ff;
+}
+
+/* 📌 Ajustement pour mobile */
+@media (max-width: 600px) {
+    .button-container {
+        flex-direction: column;
+    }
+}

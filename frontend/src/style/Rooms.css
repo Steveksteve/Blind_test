@@ -1,0 +1,21 @@
+.rooms-container {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.rooms-list {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.room-card {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.room-card:hover {
+    background-color: #333;
+}

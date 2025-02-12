@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { io } from "socket.io-client";
 import Input from "../components/Input";
-import Button from "../components/Button";
+import Button from "../components/buttons/Button";
 
 const socket = io("http://127.0.0.1:5000");
 
