@@ -9,31 +9,33 @@ const Chat = ({ roomId, username }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
 
-
   useEffect(() => {
-    if (roomId) {
-      socket.connect(); 
-      socket.emit("join_room", { username, room: roomId });
+    if (!roomId || !username) return;
 
-      socket.on("join_confirmation", (data) => {
-        console.log("✅ Connexion confirmée :", data.message);
-      });
+    socket.connect();
 
-      socket.on("new_message", (msg) => {
-        setMessages((prev) => [...prev, msg]);
-      });
+    socket.emit("join_room", { username, room: roomId });
 
-      return () => {
-        socket.disconnect(); 
-      };
-    }
+    socket.on("join_confirmation", (data) => {
+      console.log("✅ Connexion confirmée :", data.message);
+    });
+
+    socket.on("receive_message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.emit("leave_room", { username, room: roomId });
+      socket.disconnect();
+    };
   }, [roomId, username]);
-
 
   const sendMessage = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      socket.emit("send_message", { room: roomId, message: `${username}: ${message}` });
+      const messageData = { room: roomId, username, message };
+      socket.emit("send_message", messageData);
+      setMessages((prev) => [...prev, `${username}: ${message}`]); // Affichage instantané
       setMessage("");
     }
   };

@@ -4,7 +4,7 @@ from models import db, User
 
 auth = Blueprint('auth', __name__)
 
-# Route d'inscription
+# 📌 Route d'inscription
 @auth.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -18,14 +18,20 @@ def register():
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email déjà utilisé"}), 400
 
-    new_user = User(username=username, email=email)
-    new_user.set_password(password)
+    new_user = User(username=username, email=email, password=password)
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"message": "Utilisateur créé avec succès"}), 201
+    # ✅ Création d'un JWT après l'inscription
+    access_token = create_access_token(identity=new_user.id)
 
-# Route de connexion
+    return jsonify({
+        "message": "Utilisateur créé avec succès",
+        "token": access_token,  # ✅ Retourne le token
+        "username": new_user.username
+    }), 201
+
+# 📌 Route de connexion
 @auth.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -37,10 +43,15 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "Identifiants invalides"}), 401
 
+    # ✅ Création du JWT après la connexion réussie
     access_token = create_access_token(identity=user.id)
-    return jsonify({"token": access_token, "username": user.username}), 200
 
-# Route protégée
+    return jsonify({
+        "token": access_token,
+        "username": user.username
+    }), 200
+
+# 📌 Route protégée nécessitant un JWT
 @auth.route('/profile', methods=['GET'])
 @jwt_required()
 def profile():
@@ -50,4 +61,7 @@ def profile():
     if not user:
         return jsonify({"error": "Utilisateur non trouvé"}), 404
 
-    return jsonify({"username": user.username, "email": user.email}), 200
+    return jsonify({
+        "username": user.username,
+        "email": user.email
+    }), 200

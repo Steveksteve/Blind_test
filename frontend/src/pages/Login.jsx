@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import "../style/Login.css";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext);
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    alert(`Connexion en cours pour ${username} 🔒`);
+  const handleLogin = (e) => {
+    e.preventDefault();
+    login(email, password);
   };
 
   return (
@@ -15,10 +17,10 @@ const Login = () => {
       <h2>🔒 Connexion</h2>
       <form onSubmit={handleLogin}>
         <input
-          type="text"
-          placeholder="Nom d'utilisateur"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input

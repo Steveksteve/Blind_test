@@ -4,6 +4,7 @@ eventlet.monkey_patch()  # ✅ Nécessaire pour le bon fonctionnement avec event
 
 from flask import Flask, render_template
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS  # ✅ Import Flask-CORS
 from config import config
 from extensions import db, bcrypt, socketio
 from routes import auth
@@ -15,10 +16,13 @@ from room_routes import room_bp  # ✅ Import du Blueprint des rooms
 app = Flask(__name__)
 app.config.from_object(config)
 
+# ✅ Active CORS pour autoriser uniquement les requêtes du frontend (localhost:3000)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
 # 📌 Initialisation des extensions
 db.init_app(app)
 bcrypt.init_app(app)
-jwt = JWTManager(app)
+jwt = JWTManager(app)  # ✅ Initialisation correcte du JWT
 
 # 📌 Initialisation de SocketIO
 socketio = init_socketio(app)
@@ -27,7 +31,6 @@ socketio = init_socketio(app)
 app.register_blueprint(auth, url_prefix="/api")
 app.register_blueprint(music, url_prefix="/api")
 app.register_blueprint(room_bp, url_prefix="/api")  # ✅ Enregistrement du Blueprint des rooms
-
 
 # 📌 Page d'accueil simple (pour test)
 @app.route('/')

@@ -1,57 +1,68 @@
-import { createContext, useState, useEffect } from "react";
-import api from "../api/api";
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   useEffect(() => {
     if (token) {
-      api
-        .get("/profile")
-        .then((res) => {
-          setUser(res.data);
-        })
+      axios.get("http://127.0.0.1:8080/api/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => setUser(res.data))
         .catch(() => {
-          logout();
+          localStorage.removeItem("token");
+          setToken(null);
         });
     }
   }, [token]);
 
-  const login = async (email, password) => {
-    try {
-      const res = await api.post("/login", { email, password });
-      setToken(res.data.token);
-      localStorage.setItem("token", res.data.token);
-      setUser({ username: res.data.username, email });
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
-
+  // ✅ Fonction d'inscription
   const register = async (username, email, password) => {
     try {
-      await api.post("/register", { username, email, password });
-      return true;
+      const response = await axios.post("http://127.0.0.1:8080/api/register", {
+        username,
+        email,
+        password,
+      });
+
+      alert("Inscription réussie !");
     } catch (error) {
-      return false;
+      console.error("❌ Erreur lors de l'inscription :", error.response?.data || error);
+      alert(error.response?.data?.error || "Erreur lors de l'inscription.");
     }
   };
 
+  // ✅ Fonction de connexion
+  const login = async (email, password) => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8080/api/login", {
+        email,
+        password,
+      });
+
+      localStorage.setItem("token", response.data.token);
+      setToken(response.data.token);
+      setUser({ username: response.data.username });
+    } catch (error) {
+      console.error("❌ Erreur lors de la connexion :", error.response?.data || error);
+      alert(error.response?.data?.error || "Identifiants incorrects.");
+    }
+  };
+
+  // ✅ Fonction de déconnexion
   const logout = () => {
     localStorage.removeItem("token");
-    setUser(null);
     setToken(null);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthContext;

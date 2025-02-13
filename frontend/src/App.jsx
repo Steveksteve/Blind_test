@@ -13,24 +13,13 @@ import Header from "./components/Header";
 
 /* 🎨 Importation de tous les styles */
 import "./style/App.css";
-import "./style/BackButton.css";
-import "./style/Chat.css";
-import "./style/Game.css";
-import "./style/Header.css";
-import "./style/Home.css";
 import "./style/index.css";
-import "./style/Login.css";
-import "./style/Profile.css";
-import "./style/Results.css";
-import "./style/Room.css";
-import "./style/Rooms.css";
-import "./style/Signup.css";
 
 function App() {
   return (
     <>
       <Header />
-      <Routes>
+      <Routes> {/* ✅ PAS DE BrowserRouter ICI */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
