@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import "../style/Signup.css";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const { register } = useContext(AuthContext);
 
   const handleSignup = (e) => {
     e.preventDefault();
-    console.log("Inscription:", { username, email, password });
-    navigate("/profile");
+    register(username, email, password);
   };
 
   return (
