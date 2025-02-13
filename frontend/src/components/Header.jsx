@@ -5,9 +5,10 @@ import "../style/Header.css";
 const Header = () => {
   return (
     <header className="header">
-      <div className="logo">
+      {/* Modification ici : Ajout du Link autour du logo */}
+      <Link to="/" className="logo">
         🎵 <span>BeatGuess</span>
-      </div>
+      </Link>
       <nav className="nav-links">
         <Link to="/">Accueil</Link>
         <Link to="/rooms">Rooms</Link>
