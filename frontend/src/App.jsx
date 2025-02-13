@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Rooms from "./pages/Rooms";
 import Room from "./pages/Room";
+import GenreSelection from "./components/GenreSelection";
 import Profile from "./pages/Profile";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -37,7 +38,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/rooms" element={<Rooms />} />
         <Route path="/room/:id" element={<Room />} />
-        <Route path="/game" element={<Game />} />
+        <Route path="/room/:id/genres" element={<GenreSelection />} />
+        <Route path="/game/:id" element={<Game />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/results" element={<Results />} />
       </Routes>

@@ -1,15 +1,38 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import Chat from '../pages/Chat';
-import '../style/Room.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../style/Room.css";
+
+const genres = ["Pop", "Rock", "Rap", "Classique", "Jazz", "Electro"];
 
 function Room() {
-  const { id } = useParams();
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const navigate = useNavigate();
+
+  const handleStartGame = () => {
+    if (!selectedGenre) {
+      alert("Veuillez choisir un genre avant de jouer !");
+      return;
+    }
+    navigate("/game"); // Redirection vers la page de jeu
+  };
+
   return (
     <div className="room-container">
-      <h1 className="room-title">🎵 Room {id}</h1>
-      <p className="room-description">Choisis ton genre musical et commence le jeu !</p>
-      <Chat />
+      <h1>🎵 Choisis un genre</h1>
+      <div className="genres-list">
+        {genres.map((genre) => (
+          <button
+            key={genre}
+            className={`genre-button ${selectedGenre === genre ? "selected" : ""}`}
+            onClick={() => setSelectedGenre(genre)}
+          >
+            {genre}
+          </button>
+        ))}
+      </div>
+      <button className="start-game" onClick={handleStartGame}>
+        ▶ Commencer à jouer
+      </button>
     </div>
   );
 }

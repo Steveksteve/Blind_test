@@ -1,161 +1,102 @@
 .profile-container {
-    text-align: center;
-    color: white;
-    padding: 20px;
-  }
-  
-  /* Bannière personnalisée */
-  .profile-banner {
-    width: 100%;
-    max-width: 400px;
-    height: 90px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: background-color 0.3s ease, border-radius 0.3s ease;
-  }
-  
-  /* Forme arrondie par défaut */
-  .profile-banner.rounded {
-    border-radius: 40px;
-  }
-  
-  /* Forme carrée */
-  .profile-banner.square {
-    border-radius: 10px;
-  }
-  
-  /* Contenu de la bannière */
-  .banner-content {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 20px;
-  }
-  
-  /* Avatar cliquable (positionné à gauche) */
-  .avatar-container {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid white;
-    cursor: pointer;
-  }
-  
-  .upload-text {
-    font-size: 1.5rem;
-    color: white;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 10px;
-    border-radius: 50%;
-  }
-  
-  /* Nom d'utilisateur centré */
-  .username {
-    flex-grow: 1;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-  }
-  
-  /* Options de personnalisation */
-  .profile-options {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  
-  .option-button {
-    background-color: #ff00ff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.3s ease;
-  }
-  
-  .option-button:hover {
-    background-color: #cc00cc;
-  }
-  
-  /* Informations du compte */
-  .profile-info {
-    margin-top: 20px;
-  }
-  
-  /* Modal pour changer le mot de passe */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 200;
-  }
-  
-  .modal {
-    background: #222;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-  }
-  
-  .modal h3 {
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-  }
-  
-  .modal form input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-  
-  .modal-buttons {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .modal-button {
-    background: #ff00ff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    flex: 1;
-    margin: 5px;
-    transition: background 0.3s ease;
-  }
-  
-  .modal-button.cancel {
-    background: #ff4500;
-  }
-  
-  .modal-button:hover {
-    opacity: 0.8;
-  }
-  
+  text-align: center;
+  color: white;
+  padding: 20px;
+}
+
+/* Bannière compacte et stylisée */
+.profile-banner {
+  width: 100%;
+  max-width: 320px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+/* Formes de la bannière */
+.profile-banner.rounded {
+  border-radius: 20px;
+}
+
+.profile-banner.square {
+  border-radius: 5px;
+}
+
+/* Avatar */
+.avatar-container {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+/* Nom d'utilisateur */
+.username {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* Options de personnalisation */
+.profile-settings {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Choix de couleur */
+.color-picker {
+  border: none;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  background: none;
+}
+
+/* Stylisation améliorée du dropdown */
+.styled-dropdown {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border: 2px solid #6A4BBC; /* Couleur plus douce */
+  background: rgba(255, 255, 255, 0.1); /* Fond semi-transparent */
+  color: white;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Effet au survol */
+.styled-dropdown:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Effet au focus (quand on clique) */
+.styled-dropdown:focus {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Adapter le texte sélectionné */
+.styled-dropdown option {
+  background: black;
+  color: white;
+}
+
+
+/* Informations utilisateur */
+.profile-info {
+  margin-top: 20px;
+}
