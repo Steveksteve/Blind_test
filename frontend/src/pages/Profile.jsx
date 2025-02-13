@@ -1,18 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../style/Profile.css";
 
 function Profile() {
-  const [username, setUsername] = useState("Utilisateur123");
-  const [email, setEmail] = useState("user@example.com");
+  const { user, logout, token } = useContext(AuthContext);
+  const [username, setUsername] = useState(user?.username || "Utilisateur");
+  const [email, setEmail] = useState(user?.email || "user@example.com");
   const [bannerColor, setBannerColor] = useState("#6A4BBC");
-  const [bannerShape, setBannerShape] = useState("rounded"); // "rounded" ou "square"
+  const [bannerShape, setBannerShape] = useState("rounded");
   const [avatar, setAvatar] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
+  const navigate = useNavigate();
 
-  // Lorsque l'utilisateur clique sur l'avatar, le input file est activé (grâce à la balise label)
+  // ✅ Charge les infos utilisateur depuis le backend
+  useEffect(() => {
+    if (token) {
+      axios.get("http://127.0.0.1:8080/api/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          setUsername(res.data.username);
+          setEmail(res.data.email);
+        })
+        .catch(() => logout());
+    }
+  }, [token, logout]);
+
+  // ✅ Gérer l’upload de l’avatar (simulé localement)
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -20,27 +38,33 @@ function Profile() {
     }
   };
 
-  // Bascule la forme de la bannière
+  // ✅ Bascule la forme de la bannière
   const toggleBannerShape = () => {
     setBannerShape(bannerShape === "rounded" ? "square" : "rounded");
   };
 
-  // Gestion du formulaire de changement de mot de passe
-  const handleChangePassword = (e) => {
+  // ✅ Gestion du changement de mot de passe
+  const handleChangePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       alert("Les mots de passe ne correspondent pas !");
       return;
     }
-    if (confirmEmail !== email) {
-      alert("L'email de confirmation ne correspond pas !");
-      return;
+
+    try {
+      await axios.post(
+        "http://127.0.0.1:8080/api/change-password",
+        { password: newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert("✅ Mot de passe mis à jour avec succès !");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPasswordModal(false);
+    } catch (error) {
+      alert("❌ Erreur lors du changement de mot de passe.");
     }
-    alert("Mot de passe changé avec succès !");
-    setNewPassword("");
-    setConfirmPassword("");
-    setConfirmEmail("");
-    setShowPasswordModal(false);
   };
 
   return (
@@ -48,7 +72,7 @@ function Profile() {
       {/* Bannière personnalisable */}
       <div className={`profile-banner ${bannerShape}`} style={{ backgroundColor: bannerColor }}>
         <div className="banner-content">
-          {/* Avatar cliquable pour changer l'image */}
+          {/* Avatar cliquable */}
           <div className="avatar-container">
             <label htmlFor="avatar-upload">
               {avatar ? (
@@ -65,12 +89,11 @@ function Profile() {
               style={{ display: "none" }}
             />
           </div>
-          {/* Nom d'utilisateur centré */}
           <span className="username">{username}</span>
         </div>
       </div>
 
-      {/* Options de personnalisation de la bannière */}
+      {/* Options de personnalisation */}
       <div className="profile-options">
         <button
           className="option-button"
@@ -86,6 +109,12 @@ function Profile() {
         </button>
         <button className="option-button" onClick={() => setShowPasswordModal(true)}>
           🔑 Changer le mot de passe
+        </button>
+        <button className="option-button logout" onClick={() => {
+          logout();
+          navigate("/login");
+        }}>
+          🚪 Se déconnecter
         </button>
       </div>
 
@@ -113,13 +142,6 @@ function Profile() {
                 placeholder="Confirmer le mot de passe"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-              <input
-                type="email"
-                placeholder="Email de confirmation"
-                value={confirmEmail}
-                onChange={(e) => setConfirmEmail(e.target.value)}
                 required
               />
               <div className="modal-buttons">
