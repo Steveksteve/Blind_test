@@ -7,8 +7,8 @@
   /* Bannière personnalisée */
   .profile-banner {
     width: 100%;
-    max-width: 500px;
-    height: 150px;
+    max-width: 400px;
+    height: 90px;
     margin: 0 auto;
     display: flex;
     align-items: center;
