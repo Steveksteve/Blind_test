@@ -1,7 +1,6 @@
 import os
 import eventlet
 eventlet.monkey_patch()  # ✅ Nécessaire pour le bon fonctionnement avec eventlet
-
 from flask import Flask, render_template
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -30,7 +29,7 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 # 📌 Initialisation des extensions
 db.init_app(app)
 bcrypt.init_app(app)
-jwt = JWTManager(app)  # ✅ Initialisation correcte du JWT
+jwt = JWTManager(app)  
 
 # 📌 Initialisation de SocketIO
 socketio = init_socketio(app)
@@ -58,6 +57,5 @@ with app.app_context():
 if __name__ == '__main__':
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", 8080))
-
     print(f"🚀 Serveur démarré sur http://{host}:{port}")
     socketio.run(app, host=host, port=port, debug=True, allow_unsafe_werkzeug=True)

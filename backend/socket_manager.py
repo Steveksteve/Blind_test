@@ -1,3 +1,5 @@
+import os
+import eventlet
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask import request
 from extensions import db
@@ -65,10 +67,9 @@ def init_socketio(app):
             db.session.add(user)
         else:
             user.room_id = room_id
-            user.session_id = request.sid  # ✅ Mise à jour du session_id
+            user.session_id = request.sid
         db.session.commit()
 
-        # Ajouter l'utilisateur à la liste des rooms actives
         if room_id not in active_rooms:
             active_rooms[room_id] = set()
         active_rooms[room_id].add(username)
@@ -88,20 +89,19 @@ def init_socketio(app):
         user = User.query.filter_by(username=username).first()
         
         if user:
-            user.room_id = None  # ✅ Ne pas supprimer, juste le retirer de la room
-            user.session_id = None  # ✅ Suppression du session_id
+            user.room_id = None
+            user.session_id = None
             db.session.commit()
 
         if room_id in active_rooms and username in active_rooms[room_id]:
             active_rooms[room_id].remove(username)
             
-            # ✅ Si plus personne dans la room, suppression après 5 minutes
             if not active_rooms[room_id]:  
                 del active_rooms[room_id]
-                eventlet.spawn_after(300, delete_empty_room, room_id)  # ⏳ Supprime après 5 min
+                eventlet.spawn_after(300, delete_empty_room, room_id)
 
     def delete_empty_room(room_id):
-        if room_id not in active_rooms:  # Vérifier si la room est toujours vide
+        if room_id not in active_rooms:
             Room.query.filter_by(id=room_id).delete()
             db.session.commit()
             print(f"🗑️ Room {room_id} supprimée après 5 minutes d'inactivité.")
@@ -117,8 +117,8 @@ def init_socketio(app):
         print(f"🎮 Démarrage du jeu dans la room {room_id}")
         emit("game_started", {"room_id": room_id}, room=room_id)
 
-        eventlet.sleep(60)  # Attendre 60 secondes avant de relancer une partie
-        if room_id in active_rooms and active_rooms[room_id]:  # Vérifier s'il y a toujours des joueurs
+        eventlet.sleep(60)  
+        if room_id in active_rooms and active_rooms[room_id]:
             print(f"🔄 Nouvelle partie démarrée dans la room {room_id}")
             emit("new_round", {"room_id": room_id}, room=room_id)
 

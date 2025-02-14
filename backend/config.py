@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 
-# Charger les variables d'environnement
+# Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
 
 class Config:
@@ -10,8 +10,8 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'default_jwt_key')
 
-    # 📌 Expiration des tokens JWT (1 heure)
-    JWT_ACCESS_TOKEN_EXPIRES = False
+    # 📌 Expiration des tokens JWT (ex. 1 heure)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)  # Exemple de durée de validité du token (1 heure)
 
     # 📌 Configuration de la base de données
     DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -31,7 +31,8 @@ class Config:
 
     @staticmethod
     def init_app(app):
-        """Permet d'ajouter des configurations supplémentaires à l'initialisation."""
+        """ Permet d'ajouter des configurations supplémentaires à l'initialisation. """
         pass
 
+# Création d'une instance de configuration
 config = Config()

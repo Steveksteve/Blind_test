@@ -4,6 +4,7 @@ import { getRoom, startGame } from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 import '../style/Room.css';
 
+
 const genres = ['Pop', 'Rock', 'Rap', 'Classique', 'Jazz', 'Electro'];
 
 function Room() {
