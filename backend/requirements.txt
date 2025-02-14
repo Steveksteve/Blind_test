@@ -1,5 +1,9 @@
-Flask
-Flask-SQLAlchemy
-PyMySQL
-Flask-JWT-Extended
-Flask-Bcrypt
+Flask==2.2.5
+Flask-SQLAlchemy==3.0.5
+Flask-SocketIO==5.3.4
+Flask-Cors==3.0.10
+eventlet==0.33.3
+python-dotenv==1.0.0
+bcrypt==4.0.1
+requests==2.31.0
+spotipy==2.23.0
