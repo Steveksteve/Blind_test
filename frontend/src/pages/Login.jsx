@@ -5,11 +5,24 @@ import "../style/Login.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); 
+  const [loading, setLoading] = useState(false); 
+
   const { login } = useContext(AuthContext);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    login(email, password);
+    setErrorMessage(""); 
+    setLoading(true); 
+
+    try {
+      await login(email, password);
+      console.log("Token stocké après login:", localStorage.getItem("token")); // Ajout crucial
+    } catch (error) {
+      setErrorMessage("⚠️ Identifiants incorrects. Veuillez réessayer.");
+    }
+
+    setLoading(false); 
   };
 
   return (
@@ -30,7 +43,10 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Se connecter</button>
+        {errorMessage && <p className="error-message">{errorMessage}</p>} {/* ✅ Affiche l'erreur */}
+        <button type="submit" disabled={loading}>
+          {loading ? "Connexion en cours..." : "Se connecter"}
+        </button>
       </form>
     </div>
   );

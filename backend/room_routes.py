@@ -1,19 +1,46 @@
 from flask import Blueprint, jsonify, request
 from extensions import db
-from models import Room, User
+from models import Room, User, Game  # ✅ Ajout de Game
 
 room_bp = Blueprint("room", __name__)
 
-# 📌 Récupérer toutes les rooms disponibles
+# 📌 Récupérer toutes les rooms disponibles avec l'ID de la game en cours
 @room_bp.route("/rooms", methods=["GET"])
 def get_rooms():
     rooms = Room.query.all()
-    room_list = [
-        {"id": room.id, "name": room.name, "genre": room.genre, "status": room.status, "players": room.active_users}
-        for room in rooms
-    ]
-    print("🔍 API GET /rooms appelée - Nombre de rooms :", len(room_list))  # ✅ Debug console
+    room_list = []
+
+    for room in rooms:
+        game = Game.query.filter_by(room_id=room.id, status="playing").first()
+        room_list.append({
+            "id": room.id,
+            "name": room.name,
+            "genre": room.genre,
+            "status": room.status,
+            "players": room.active_users,
+            "game_id": game.id if game else None  # ✅ Ajout de l'ID de la partie en cours
+        })
+
+    print("🔍 API GET /rooms appelée - Nombre de rooms :", len(room_list))
     return jsonify({"rooms": room_list})
+
+# 📌 Récupérer une room spécifique
+@room_bp.route("/rooms/<int:room_id>", methods=["GET"])
+def get_room(room_id):
+    room = Room.query.get(room_id)
+    if not room:
+        return jsonify({"error": "Room introuvable"}), 404
+
+    game = Game.query.filter_by(room_id=room.id, status="playing").first()
+
+    return jsonify({
+        "id": room.id,
+        "name": room.name,
+        "genre": room.genre,
+        "status": room.status,
+        "players": room.active_users,
+        "game_id": game.id if game else None  # ✅ Récupération de la game
+    })
 
 # 📌 Créer une nouvelle room
 @room_bp.route("/rooms", methods=["POST"])
@@ -50,13 +77,13 @@ def join_room():
     if not room:
         return jsonify({"error": "Room introuvable"}), 404
 
-    room.add_user(user)  # ✅ Mise à jour en base
-    print(f"✅ {user.username} a rejoint la room {room.name}")  # Debug
+    user.room_id = room.id  # ✅ Ajoute l'utilisateur à la room
+    db.session.commit()
 
+    print(f"✅ {user.username} a rejoint la room {room.name}")  # Debug console
     return jsonify({"message": f"{user.username} a rejoint {room.name}", "players": room.active_users})
 
-
-# 📌 Un joueur quitte une Room
+# 📌 Un joueur quitte une Room et est retiré de la BDD
 @room_bp.route("/rooms/leave", methods=["POST"])
 def leave_room():
     data = request.get_json()
@@ -69,7 +96,8 @@ def leave_room():
     if not user or not room:
         return jsonify({"error": "Utilisateur ou room introuvable"}), 404
 
-    room.remove_user(user)  # ✅ Mise à jour en base
-    print(f"❌ {user.username} a quitté la room {room.name}")  # Debug
+    user.room_id = None  # ✅ Retire l'utilisateur de la room
+    db.session.commit()
 
+    print(f"❌ {user.username} a quitté la room {room.name}")  # Debug console
     return jsonify({"message": f"{user.username} a quitté {room.name}", "players": room.active_users})

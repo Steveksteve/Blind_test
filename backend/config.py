@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Charger les variables d'environnement
 load_dotenv()
@@ -8,6 +9,9 @@ class Config:
     # 🔐 Clés secrètes
     SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'default_jwt_key')
+
+    # 📌 Expiration des tokens JWT (1 heure)
+    JWT_ACCESS_TOKEN_EXPIRES = False
 
     # 📌 Configuration de la base de données
     DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URI')

@@ -1,14 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthContext"; // ✅ Utilisation du contexte
+import axios from "axios";
 import "../style/Profile.css";
 
 function Profile() {
-  const [username] = useState("Utilisateur123");
-  const [email] = useState("user@example.com");
+  const { token } = useContext(AuthContext); // ✅ Récupère le token et l'utilisateur
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [bannerColor, setBannerColor] = useState("#6A4BBC");
   const [bannerShape, setBannerShape] = useState("rounded");
   const [avatar, setAvatar] = useState(null);
 
-  // Changer l'avatar
+  // 📌 Charger les informations du profil utilisateur
+  useEffect(() => {
+    if (token) {
+      axios
+        .get("http://127.0.0.1:8080/api/auth/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setUsername(res.data.username);
+          setEmail(res.data.email);
+        })
+        .catch((error) => {
+          console.error("⚠️ Erreur lors de la récupération du profil :", error);
+        });
+    }
+  }, [token]);
+
+  // 📌 Changer l'avatar
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -16,12 +36,12 @@ function Profile() {
     }
   };
 
-  // Changer la couleur de la bannière
+  // 📌 Changer la couleur de la bannière
   const handleColorChange = (e) => {
     setBannerColor(e.target.value);
   };
 
-  // Changer la forme de la bannière
+  // 📌 Changer la forme de la bannière
   const handleShapeChange = (e) => {
     setBannerShape(e.target.value);
   };
@@ -49,7 +69,7 @@ function Profile() {
             style={{ display: "none" }}
           />
         </div>
-        <span className="username">{username}</span>
+        <span className="username">{username || "Utilisateur"}</span>
       </div>
 
       {/* Options de personnalisation */}
@@ -78,8 +98,8 @@ function Profile() {
 
       {/* Informations utilisateur */}
       <div className="profile-info">
-        <h2>👤 {username}</h2>
-        <p>📧 {email}</p>
+        <h2>👤 {username || "Utilisateur"}</h2>
+        <p>📧 {email || "Email non disponible"}</p>
       </div>
     </div>
   );

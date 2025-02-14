@@ -4,17 +4,25 @@ eventlet.monkey_patch()  # ✅ Nécessaire pour le bon fonctionnement avec event
 
 from flask import Flask, render_template
 from flask_jwt_extended import JWTManager
-from flask_cors import CORS  # ✅ Import Flask-CORS
-from config import config
+from flask_cors import CORS
+from dotenv import load_dotenv  # ✅ Charger .env
+from config import Config  # ✅ Importer Config correctement
 from extensions import db, bcrypt, socketio
 from routes import auth
 from music_routes import music
 from socket_manager import init_socketio
-from room_routes import room_bp  # ✅ Import du Blueprint des rooms
+from room_routes import room_bp
+from game_routes import game_bp  # ✅ Importer les routes du jeu
+
+# 📌 Charger les variables d'environnement
+load_dotenv()
 
 # 📌 Initialisation de l'application Flask
 app = Flask(__name__)
-app.config.from_object(config)
+app.config.from_object(Config)  # ✅ Utiliser Config
+
+# ✅ Vérifier que la durée du token est bien définie
+print(f"🕒 Durée du token JWT : {app.config['JWT_ACCESS_TOKEN_EXPIRES']}")
 
 # ✅ Active CORS pour autoriser uniquement les requêtes du frontend (localhost:3000)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
@@ -28,9 +36,10 @@ jwt = JWTManager(app)  # ✅ Initialisation correcte du JWT
 socketio = init_socketio(app)
 
 # 📌 Enregistrement des routes
-app.register_blueprint(auth, url_prefix="/api")
+app.register_blueprint(auth, url_prefix="/api/auth")  
 app.register_blueprint(music, url_prefix="/api")
-app.register_blueprint(room_bp, url_prefix="/api")  # ✅ Enregistrement du Blueprint des rooms
+app.register_blueprint(room_bp, url_prefix="/api")
+app.register_blueprint(game_bp, url_prefix="/api")  
 
 # 📌 Page d'accueil simple (pour test)
 @app.route('/')
