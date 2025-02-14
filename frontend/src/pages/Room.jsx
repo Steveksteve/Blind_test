@@ -1,25 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getRoom, startGame } from "../api/api"; // ✅ Utiliser getRoom() au lieu de getRooms()
-import { AuthContext } from "../context/AuthContext"; // ✅ Vérification de l'utilisateur connecté
-import "../style/Room.css";
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getRoom, startGame } from '../api/api';
+import { AuthContext } from '../context/AuthContext';
+import '../style/Room.css';
 
-const genres = ["Pop", "Rock", "Rap", "Classique", "Jazz", "Electro"];
+const genres = ['Pop', 'Rock', 'Rap', 'Classique', 'Jazz', 'Electro'];
 
 function Room() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, token } = useContext(AuthContext); // ✅ Vérification de l'utilisateur
-  const [selectedGenre, setSelectedGenre] = useState("");
+  const { user, token } = useContext(AuthContext);
+  const [selectedGenre, setSelectedGenre] = useState('');
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // ✅ Vérifie si l'utilisateur est connecté
     if (!user || !token) {
-      console.warn("🚨 Aucun utilisateur trouvé, redirection...");
-      alert("Vous devez être connecté pour rejoindre une room.");
-      navigate("/login");
+      console.warn('🚨 Aucun utilisateur trouvé, redirection...');
+      alert('Vous devez être connecté pour rejoindre une room.');
+      navigate('/login');
       return;
     }
 
@@ -28,34 +27,32 @@ function Room() {
 
   const fetchRoomData = async () => {
     try {
-      const response = await getRoom(id); // ✅ Récupérer UNE room via l'API
+      const response = await getRoom(id);
       setRoom(response.data);
       setLoading(false);
-      console.log("✅ Room trouvée :", response.data);
+      console.log('✅ Room trouvée :', response.data);
 
-      // ✅ Vérifie si l'utilisateur est déjà dans la room
       if (!response.data.players.includes(user.id)) {
-        console.warn("🚨 L'utilisateur n'est pas dans cette room !");
-        alert("Vous n'êtes pas dans cette room !");
-        navigate("/rooms");
+        console.warn('🚨 L\'utilisateur n\'est pas dans cette room !');
+        alert('Vous n\'êtes pas dans cette room !');
+        navigate('/rooms');
         return;
       }
 
-      // ✅ Rediriger immédiatement si une game est en cours
       if (response.data.game_id) {
         navigate(`/game/${response.data.game_id}`);
       }
     } catch (error) {
-      console.error("❌ Erreur lors du chargement de la room :", error);
+      console.error('❌ Erreur lors du chargement de la room :', error);
       setLoading(false);
-      alert("Room introuvable !");
-      navigate("/rooms");
+      alert('Room introuvable !');
+      navigate('/rooms');
     }
   };
 
   const handleStartGame = async () => {
     if (!selectedGenre) {
-      alert("Veuillez choisir un genre avant de jouer !");
+      alert('Veuillez choisir un genre avant de jouer !');
       return;
     }
 
@@ -63,7 +60,7 @@ function Room() {
       await startGame(id);
       navigate(`/game/${id}`);
     } catch (error) {
-      console.error("❌ Erreur lors du démarrage de la partie :", error);
+      console.error('❌ Erreur lors du démarrage de la partie :', error);
     }
   };
 
@@ -81,7 +78,7 @@ function Room() {
             {genres.map((genre) => (
               <button
                 key={genre}
-                className={`genre-button ${selectedGenre === genre ? "selected" : ""}`}
+                className={`genre-button ${selectedGenre === genre ? 'selected' : ''}`}
                 onClick={() => setSelectedGenre(genre)}
               >
                 {genre}

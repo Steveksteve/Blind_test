@@ -12,11 +12,11 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [userId, setUserId] = useState(localStorage.getItem("id") || null);
 
-  console.log("🔍 AuthContext chargé :", { user, token });
+  console.log("🔍 AuthContext chargé :", { user, token, userId });
 
-  // ✅ Charger le profil utilisateur quand un token est présent
+  // 📌 Charger le profil utilisateur si un token est présent
   useEffect(() => {
-    if (token && !user) { // On évite de relancer si user est déjà défini
+    if (token && !user) {
       console.log("🔄 Vérification du profil...");
       axios
         .get("http://127.0.0.1:8080/api/auth/profile", {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         .then((res) => {
           console.log("✅ Profil reçu après connexion :", res.data);
           setUser(res.data);
-          localStorage.setItem("user", JSON.stringify(res.data)); // ✅ Sauvegarde dans localStorage
+          localStorage.setItem("user", JSON.stringify(res.data));
         })
         .catch((error) => {
           console.error("❌ Erreur de récupération du profil :", error);
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // ✅ Fonction de connexion
+  // 📌 Fonction de connexion (Login)
   const login = async (email, password) => {
     try {
       const { data } = await axios.post("http://127.0.0.1:8080/api/auth/login", {
@@ -50,13 +50,15 @@ export const AuthProvider = ({ children }) => {
         throw new Error("❌ Réponse API invalide, vérifiez les clés.");
       }
 
+      // ✅ Stockage sécurisé des données
       localStorage.setItem("token", token);
       localStorage.setItem("refresh_token", refresh_token);
       localStorage.setItem("id", id);
-      localStorage.setItem("user", JSON.stringify({ id, username })); // ✅ Sauvegarde
+      localStorage.setItem("user", JSON.stringify({ id, username }));
 
       setToken(token);
       setUser({ id, username });
+      setUserId(id);
 
       console.log("✅ Token stocké après login :", token);
     } catch (error) {
@@ -65,7 +67,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Fonction de déconnexion
+  // 📌 Fonction d'inscription (Register)
+  const register = async (username, email, password) => {
+    try {
+      const { data } = await axios.post("http://127.0.0.1:8080/api/auth/register", {
+        username,
+        email,
+        password,
+      });
+
+      console.log("✅ Inscription réussie :", data);
+
+      // ✅ Connexion automatique après inscription
+      await login(email, password);
+    } catch (error) {
+      console.error("❌ Erreur lors de l'inscription :", error.response?.data || error);
+      alert(error.response?.data?.error || "Impossible de s'inscrire.");
+    }
+  };
+
+  // 📌 Fonction de déconnexion (Logout)
   const logout = () => {
     console.log("🚪 Déconnexion en cours...");
     localStorage.removeItem("token");
@@ -80,7 +101,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, userId, login, logout }}>
+    <AuthContext.Provider value={{ user, token, userId, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

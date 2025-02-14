@@ -5,19 +5,19 @@ import { getRooms, createRoom, joinRoom } from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 
 function Rooms() {
-  const { user, token } = useContext(AuthContext); // ✅ Utilisation du contexte
+  const { user, token } = useContext(AuthContext);
   const [rooms, setRooms] = useState([]);
-  const [newRoomName, setNewRoomName] = useState("");
+  const [newRoomName, setNewRoomName] = useState('');
   const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
 
   // 📌 Vérifier si l'utilisateur est connecté
   useEffect(() => {
-    console.log("🔍 Vérification de l'utilisateur :", { user, token });
+    console.log('🔍 Vérification de l\'utilisateur :', { user, token });
 
     if (!user || !token) {
-      console.warn("⚠️ Aucun utilisateur trouvé, redirection...");
-      navigate("/login"); // ✅ Rediriger l'utilisateur s'il n'est pas connecté
+      console.warn('⚠️ Aucun utilisateur trouvé, redirection...');
+      navigate('/login');
     } else {
       fetchRooms();
     }
@@ -26,12 +26,12 @@ function Rooms() {
   // 📌 Charger les rooms disponibles
   const fetchRooms = async () => {
     try {
-      console.log("📡 Envoi de la requête GET /api/rooms");
+      console.log('📡 Envoi de la requête GET /api/rooms');
       const response = await getRooms();
-      console.log("✅ Réponse reçue :", response.data);
+      console.log('✅ Réponse reçue :', response.data);
       setRooms(response.data.rooms);
     } catch (error) {
-      console.error("❌ Erreur lors de la récupération des rooms :", error);
+      console.error('❌ Erreur lors de la récupération des rooms :', error);
     }
   };
 
@@ -40,22 +40,22 @@ function Rooms() {
     if (!newRoomName.trim()) return;
 
     try {
-      const response = await createRoom(newRoomName, "Mix");
+      const response = await createRoom(newRoomName, 'Mix');
       const newRoom = response.data;
 
       setRooms([...rooms, { id: newRoom.room_id, name: newRoomName, game_id: null }]);
-      setNewRoomName("");
+      setNewRoomName('');
       setShowForm(false);
       navigate(`/room/${newRoom.room_id}`);
     } catch (error) {
-      console.error("❌ Erreur lors de la création de la room :", error);
+      console.error('❌ Erreur lors de la création de la room :', error);
     }
   };
 
   // 📌 Rejoindre une room
   const handleJoinRoom = async (roomId, gameId) => {
     if (!user) {
-      alert("Vous devez être connecté pour rejoindre une room.");
+      alert('Vous devez être connecté pour rejoindre une room.');
       return;
     }
 
@@ -68,7 +68,7 @@ function Rooms() {
         navigate(`/room/${roomId}`);
       }
     } catch (error) {
-      console.error("❌ Erreur lors de la connexion à la room :", error);
+      console.error('❌ Erreur lors de la connexion à la room :', error);
     }
   };
 
@@ -82,9 +82,9 @@ function Rooms() {
             <button
               key={room.id}
               className="room-button"
-              onClick={() => handleJoinRoom(room.id, room.game_id)} // ✅ Vérification s'il y a une game
+              onClick={() => handleJoinRoom(room.id, room.game_id)}
             >
-              {room.name} ({room.players || 0} joueurs) {room.game_id ? "🎮 Partie en cours" : ""}
+              {room.name} ({room.players?.length || 0} joueurs) {room.game_id ? '🎮 Partie en cours' : ''}
             </button>
           ))
         ) : (

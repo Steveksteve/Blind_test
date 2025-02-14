@@ -17,7 +17,7 @@ def get_rooms():
             "name": room.name,
             "genre": room.genre,
             "status": room.status,
-            "players": room.active_users,
+            "players": [user.id for user in room.users],
             "game_id": game.id if game else None  # ✅ Ajout de l'ID de la partie en cours
         })
 
@@ -38,7 +38,7 @@ def get_room(room_id):
         "name": room.name,
         "genre": room.genre,
         "status": room.status,
-        "players": room.active_users,
+        "players": [user.id for user in room.users],
         "game_id": game.id if game else None  # ✅ Récupération de la game
     })
 
